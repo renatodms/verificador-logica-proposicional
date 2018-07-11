@@ -1,4 +1,4 @@
-module Parser (parsing) where
+module Parser (compareProp) where
 
 import Verify
 
@@ -9,16 +9,17 @@ varList = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','
 
 -- Converte uma string para o tipo Prop (do módulo Verify), verificando sua sintaxe.
 parsing :: String -> Prop
-parsing "" = error "Expressão inválida."
+parsing "" = Error "Expressão inválida."
 parsing (x:"")
  | x == 'T' = Const True
  | x == 'F' = Const False
  | elem x varList = Var x
- | otherwise = error "Expressão inválida."
+ | otherwise = Error "Expressão inválida."
 parsing (x:(y:""))
  | x == '!' && y == 'T' = Neg (Const True)
  | x == '!' && y == 'F' = Neg (Const False)
  | x == '!' && elem y varList = Neg (Var y)
+ | otherwise = Error "Expressão inválida."
 parsing (x:(y:(z:xs)))
  | x == 'T' && y == '&' = Conj (Const True) (parsing (z:xs))
  | x == 'F' && y == '&' = Conj (Const False) (parsing (z:xs))
@@ -46,7 +47,31 @@ parsing (x:(y:(z:xs)))
  | x == '!' && elem y varList && z == '&' = Conj (Neg (Var y)) (parsing xs)
  | x == '!' && elem y varList && z == '|' = Disj (Neg (Var y)) (parsing xs)
  | x == '!' && elem y varList && z == '>' = Imp (Neg (Var y)) (parsing xs)
- | otherwise = error "Expressão inválida."
+ | otherwise = Error "Expressão inválida."
+
+-- Verifica duas expressões (strings) e retorna o status 
+compareProp :: String -> String -> String
+compareProp expA expB
+ | (hasErrorProp (parsing expA)) /= "" = "Expressão da esquerda inválida."
+ | (hasErrorProp (parsing expB)) /= "" = "Expressão da direita inválida."
+ | varsVerify (parsing expA) (parsing expB) == False = "Quantidade de variáveis diferente nas expressões."
+ | otherwise = show (equiv (parsing expA) (parsing expB))
+
+-- Verifica se há erro no parsing
+hasErrorProp :: Prop -> String
+hasErrorProp (Error x) = x
+hasErrorProp (Const _) = ""
+hasErrorProp (Var _) = ""
+hasErrorProp (Neg exp) = hasErrorProp exp
+hasErrorProp (Conj expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
+hasErrorProp (Disj expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
+hasErrorProp (Imp expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
+hasErrorProp (Xor expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
+hasErrorProp (Sse expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
+
+-- Verifica se a quantidade de variáveis é a mesma nas duas expressões
+varsVerify :: Prop -> Prop -> Bool
+varsVerify expA expB = (length (vars expA)) == (length (vars expB))
 
 -- Verifica se a string passada é um envolto de parênteses estruturado, sem mais caracteres em seguida
 isJustObject :: String -> Int -> Bool
@@ -126,3 +151,6 @@ test = do
  print (parsing "(T)&(k)")
  print (parsing "T&l")
  print (parsing "m>(!(!(n)|o)|!(F))")
+ print "ERROS:"
+ print (parsing "T4")
+ print (parsing "!(f)&g)")

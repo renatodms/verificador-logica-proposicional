@@ -11,7 +11,7 @@ module Verify
 
 -- Tipo algébrico que define uma proposição da lógica proposicional.
 data Prop = Const Bool | Var Char | Neg Prop | Conj Prop Prop | Disj Prop Prop |
-            Xor Prop Prop | Imp Prop Prop | Sse Prop Prop
+            Xor Prop Prop | Imp Prop Prop | Sse Prop Prop | Error String
             deriving (Eq, Show)
 
 -- Tipo definido para representar a associação entre variável e valor booleano.
