@@ -62,7 +62,7 @@ initialState = Interface
     leftSize = 0,
     rightSize = 0,
     leftXmin = -510,
-    rightXmin = 40,
+    rightXmin = 45,
     maxSize = 35,
     clicked = False,
     clickedCoordinate = (0, 0),
@@ -176,12 +176,7 @@ handleKeys (EventKey (SpecialKey KeyDelete) Down _ _) interface = interface { le
 
     leftSize' = max newLeft 0
     rightSize' = max newRight 0
-handleKeys (EventKey (SpecialKey KeySpace) Down _ _) interface = interface { leftValue = leftValue', rightValue = rightValue', leftSize = leftSize', rightSize = rightSize'  }
-  where
-    leftValue' = if (selectedLabel interface) == 1 then (leftValue  interface) ++ " " else (leftValue interface)
-    rightValue' = if (selectedLabel interface) == 2 then (rightValue  interface) ++ " " else (rightValue interface)
-    leftSize' = if (selectedLabel interface) == 1 then (leftSize interface + 1) else (leftSize interface)
-    rightSize' = if (selectedLabel interface) == 2 then (rightSize interface + 1) else (rightSize interface)
+handleKeys (EventKey (SpecialKey KeySpace) Down _ _) interface = interface  
 handleKeys (EventKey (Char charText) Down _ _) interface = interface { leftValue = leftValue', rightValue = rightValue', leftSize = leftSize', rightSize = rightSize'  }
   where
     leftValue' = if (selectedLabel interface) == 1 then (leftValue interface) ++ [charText] else (leftValue interface)
