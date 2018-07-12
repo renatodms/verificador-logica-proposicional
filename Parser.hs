@@ -71,7 +71,10 @@ hasErrorProp (Sse expA expB) = (hasErrorProp expA) ++ (hasErrorProp expB)
 
 -- Verifica se a quantidade de variáveis é a mesma nas duas expressões
 varsVerify :: Prop -> Prop -> Bool
-varsVerify expA expB = (length (vars expA)) == (length (vars expB))
+varsVerify expA expB = (length leftExpression) == (length rightExpression)
+  where
+    leftExpression = remDupl (vars expA)
+    rightExpression = remDupl (vars expB)
 
 -- Verifica se a string passada é um envolto de parênteses estruturado, sem mais caracteres em seguida
 isJustObject :: String -> Int -> Bool

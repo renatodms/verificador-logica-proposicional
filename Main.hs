@@ -95,7 +95,7 @@ checkClick interface = if not clicked' then interface {leftValueCoordinate = lef
 
     selectedLabel' = if clickedLeft then 1 else if clickedRight then 2 else 0
 
-    message' = if clickedVerify then "teste" else message interface
+    message' = if clickedVerify then (compareProp (leftValue interface) (rightValue interface) ) else message interface
 
     clickedVerify = checkAreaClicked click (verifyButtonCoordinate interface) (verifyButtonDimension interface)
 
@@ -145,7 +145,7 @@ render interface = pictures [renderLabelRight, renderValueRight, renderDrawProte
     drawProtectionArea2 = uncurry translate (-260, 205)  $ color white $ rectangleSolid 568 50
     
     drawResult :: Picture
-    drawResult = uncurry translate (50, -10) $ scale 0.25 0.25 $ color (dark red) $ Text (message interface)
+    drawResult = uncurry translate (50, -10) $ scale 0.15 0.15 $ color (dark red) $ Text (message interface)
 
     drawVerifyButton :: Picture
     drawVerifyButton = pictures [buttonBase, buttonText]
