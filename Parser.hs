@@ -55,6 +55,7 @@ compareProp expA expB
  | (hasErrorProp (parsing expA)) /= "" = "Expressão da esquerda inválida."
  | (hasErrorProp (parsing expB)) /= "" = "Expressão da direita inválida."
  | varsVerify (parsing expA) (parsing expB) == False = "Quantidade de variáveis diferente nas expressões."
+ | (isSubset (remDupl (vars (parsing expA))) (remDupl (vars (parsing expB)))) == False || (isSubset (remDupl (vars (parsing expB))) (remDupl (vars (parsing expA)))) == False = "As variáveis devem ser as mesmas nas duas expressões."
  | otherwise = show (equiv (parsing expA) (parsing expB))
 
 -- Verifica se há erro no parsing
@@ -75,6 +76,13 @@ varsVerify expA expB = (length leftExpression) == (length rightExpression)
   where
     leftExpression = remDupl (vars expA)
     rightExpression = remDupl (vars expB)
+
+-- Verifica se uma string é substring da outra
+isSubset :: String -> String -> Bool
+isSubset [] _ = True
+isSubset (x:xs) list
+ | (elem x list) && (isSubset xs list) = True
+ | otherwise = False
 
 -- Verifica se a string passada é um envolto de parênteses estruturado, sem mais caracteres em seguida
 isJustObject :: String -> Int -> Bool
@@ -140,6 +148,7 @@ removeLastChar (x:(y:xs))
 
 -- Testes
 test = do
+ print "PARSING:"
  print (parsing "a")
  print (parsing "T")
  print (parsing "(F)")
@@ -154,6 +163,11 @@ test = do
  print (parsing "(T)&(k)")
  print (parsing "T&l")
  print (parsing "m>(!(!(n)|o)|!(F))")
- print "ERROS:"
+ print "PARSING-ERROS:"
  print (parsing "T4")
  print (parsing "!(f)&g)")
+ print "COMPAREPROP:"
+ print (compareProp "!a" "((!(a)))")
+ print (compareProp "(a|b)&c" "(a&c)|(b&c)")
+ print "COMPAREPROP-ERROS:"
+ print (compareProp "a" "b")
